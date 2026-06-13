@@ -281,6 +281,12 @@ async function syncFromSheet() {
     if (data.inventory) state.inventory = data.inventory;
     if (data.transferLogs) state.transferLogs = data.transferLogs;
     if (data.lockedProducts) state.lockedProducts = data.lockedProducts;
+    // Restore passwords
+    if (data.passwords) {
+      Object.entries(data.passwords).forEach(([key, val]) => {
+        if (val) localStorage.setItem('pw_' + key, val);
+      });
+    }
     persist();
     return true;
   } catch(e) {
@@ -290,15 +296,26 @@ async function syncFromSheet() {
 
 async function syncToSheet() {
   try {
-    const payload = encodeURIComponent(JSON.stringify({
+    const passwords = { manager: localStorage.getItem('pw_manager') || '' };
+    state.stores.forEach(s => {
+      passwords['store_' + s.id] = localStorage.getItem('pw_store_' + s.id) || '';
+    });
+    const body = JSON.stringify({
       action: 'save',
       stores: state.stores,
       products: state.products,
       inventory: state.inventory,
       transferLogs: state.transferLogs,
       lockedProducts: state.lockedProducts,
-    }));
-    await fetch(SHEET_URL + '?data=' + payload, { method: 'GET', mode: 'no-cors' });
+      passwords: passwords,
+    });
+    // Use no-cors POST to avoid CORS error - fire and forget
+    fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    });
   } catch(e) {}
 }
 
