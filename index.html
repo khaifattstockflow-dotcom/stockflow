@@ -267,95 +267,6 @@ function save(key, val) {
   localStorage.setItem(key, JSON.stringify(val));
 }
 
-async function syncFromSheet() {
-  try {
-    const res = await fetch(SHEET_URL + '?action=load', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const text = await res.text();
-    const data = JSON.parse(text);
-    if (data.error) throw new Error(data.error);
-    if (data.stores && data.stores.length > 0) state.stores = data.stores;
-    if (data.products && data.products.length > 0) state.products = data.products;
-    if (data.inventory) state.inventory = data.inventory;
-    if (data.transferLogs) state.transferLogs = data.transferLogs;
-    if (data.lockedProducts) state.lockedProducts = data.lockedProducts;
-    // Restore passwords
-    if (data.passwords) {
-      Object.entries(data.passwords).forEach(([key, val]) => {
-        if (val) localStorage.setItem('pw_' + key, val);
-      });
-    }
-    persist();
-    return true;
-  } catch(e) {
-    return false;
-  }
-}
-
-async function syncToSheet() {
-  try {
-    const passwords = { manager: localStorage.getItem('pw_manager') || '' };
-    state.stores.forEach(s => {
-      passwords['store_' + s.id] = localStorage.getItem('pw_store_' + s.id) || '';
-    });
-    const body = JSON.stringify({
-      action: 'save',
-      stores: state.stores,
-      products: state.products,
-      inventory: state.inventory,
-      transferLogs: state.transferLogs,
-      lockedProducts: state.lockedProducts,
-      passwords: passwords,
-    });
-    // Use no-cors POST to avoid CORS error - fire and forget
-    fetch(SHEET_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: body,
-    });
-  } catch(e) {}
-}
-
-async function syncFromSheet() {
-  try {
-    const res = await fetch(SHEET_URL + '?action=load');
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    if (data.stores && data.stores.length > 0) state.stores = data.stores;
-    if (data.products && data.products.length > 0) state.products = data.products;
-    if (data.inventory && data.inventory.length > 0) state.inventory = data.inventory;
-    if (data.transferLogs) state.transferLogs = data.transferLogs;
-    if (data.lockedProducts) state.lockedProducts = data.lockedProducts;
-    // Also update localStorage
-    persist();
-    return true;
-  } catch(e) {
-    console.warn('Sync from sheet failed:', e);
-    return false;
-  }
-}
-
-async function syncToSheet() {
-  try {
-    await fetch(SHEET_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'save',
-        stores: state.stores,
-        products: state.products,
-        inventory: state.inventory,
-        transferLogs: state.transferLogs,
-        lockedProducts: state.lockedProducts,
-      })
-    });
-  } catch(e) {
-    console.warn('Sync to sheet failed:', e);
-  }
-}
-
 let state = {
   role: 'staff',
   tab: 'inventory',
@@ -927,9 +838,21 @@ function handleImageUpload(input) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    prodState.imageData = e.target.result;
-    const label = document.getElementById('img-upload-label');
-    if (label) label.innerHTML = `<img src="${prodState.imageData}" alt="preview"/><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
+    const img = new Image();
+    img.onload = () => {
+      // Downscale to max 400px and re-encode as JPEG q0.7 to keep base64 small (~15-30KB)
+      const MAX = 400;
+      let { width, height } = img;
+      if (width > height && width > MAX) { height = Math.round(height * MAX / width); width = MAX; }
+      else if (height > MAX) { width = Math.round(width * MAX / height); height = MAX; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      prodState.imageData = canvas.toDataURL('image/jpeg', 0.7);
+      const label = document.getElementById('img-upload-label');
+      if (label) label.innerHTML = `<img src="${prodState.imageData}" alt="preview"/><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -1124,6 +1047,46 @@ function toggleLock(productId) {
   }
   persist();
   renderInventory();
+}
+
+async function syncFromSheet() {
+  try {
+    const res = await fetch(SHEET_URL + '?action=load');
+    const data = JSON.parse(await res.text());
+    if (data.error) throw new Error(data.error);
+    if (Array.isArray(data.stores) && data.stores.length) state.stores = data.stores;
+    if (Array.isArray(data.products) && data.products.length) state.products = data.products;
+    if (data.inventory) state.inventory = data.inventory;
+    if (data.transferLogs) state.transferLogs = data.transferLogs;
+    if (data.lockedProducts) state.lockedProducts = data.lockedProducts;
+    if (data.passwords) {
+      Object.entries(data.passwords).forEach(([k, v]) => { if (v) localStorage.setItem('pw_' + k, v); });
+    }
+    persist();
+    return true;
+  } catch (e) {
+    console.warn('syncFromSheet failed:', e);
+    return false;
+  }
+}
+
+async function syncToSheet() {
+  try {
+    const passwords = { manager: localStorage.getItem('pw_manager') || '' };
+    state.stores.forEach(s => { passwords['store_' + s.id] = localStorage.getItem('pw_store_' + s.id) || ''; });
+    const body = JSON.stringify({
+      action: 'save',
+      stores: state.stores,
+      products: state.products,
+      inventory: state.inventory,
+      transferLogs: state.transferLogs,
+      lockedProducts: state.lockedProducts,
+      passwords: passwords,
+    });
+    await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
+  } catch (e) {
+    console.warn('syncToSheet failed:', e);
+  }
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
