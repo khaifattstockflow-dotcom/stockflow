@@ -903,21 +903,26 @@ function doLogin() {
     showToast('No password set. Please set one in Stores.');
     return;
   }
-  if (pw === managerPw) { hideLogin(); setRole('manager'); return; }
-  const stores = JSON.parse(localStorage.getItem('stores') || '[]');
-  const matched = stores.find(s => {
-    const stored = localStorage.getItem('pw_store_' + s.id) || '';
-    return stored && pw === stored;
-  });
-  if (matched) {
-    hideLogin(); setRole('staff');
-    staffState.storeId = matched.id;
-    renderStaff(); return;
-  }
+
+if (pw === managerPw) {
+  localStorage.setItem('session_role', 'manager');
+  localStorage.setItem('session_store', '');
+  hideLogin(); setRole('manager'); return;
+}
+
+if (matched) {
+  localStorage.setItem('session_role', 'staff');
+  localStorage.setItem('session_store', matched.id);
+  hideLogin(); setRole('staff');
+  staffState.storeId = matched.id;
+  renderStaff(); return;
+}
   err.textContent = 'Wrong password.';
 }
 
 function logout() {
+  localStorage.removeItem('session_role');
+  localStorage.removeItem('session_store');
   document.getElementById('role-dropdown').classList.remove('open');
   staffState = { storeId:'', productId:'', color:'', sizeQtys:{}, submitted:false };
   showLogin();
@@ -973,14 +978,22 @@ if (!localStorage.getItem('pw_manager')) {
   localStorage.setItem('pw_manager', 'admin');
 }
 
-showLogin();
+const savedRole = localStorage.getItem('session_role');
+const savedStore = localStorage.getItem('session_store');
+
 syncFromSheet().then(ok => {
-  if (ok) {
-    showToast('Data synced ✓');
-    if (state.role === 'manager') showTab(state.tab);
-    else if (state.role === 'staff') renderStaff();
-  }
+  if (ok && ok) showToast('Data synced ✓');
 });
+
+if (savedRole === 'manager') {
+  setRole('manager');
+} else if (savedRole === 'staff' && savedStore) {
+  setRole('staff');
+  staffState.storeId = savedStore;
+  renderStaff();
+} else {
+  showLogin();
+}
 
 </script>
 </body>
