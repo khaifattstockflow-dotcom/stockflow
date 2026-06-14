@@ -980,6 +980,7 @@ function savePw(key) {
   localStorage.setItem('pw_' + key, val);
   const label = key === 'manager' ? 'Manager' : key.replace('store_','');
   showToast(label + ' password saved');
+  persist(); // sync to Google Sheets
   renderStores();
 }
 
