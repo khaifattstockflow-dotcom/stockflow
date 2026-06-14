@@ -10,42 +10,28 @@ html{overflow-x:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdf4;color:#1c1917;overflow-x:hidden;width:100%}
 button{cursor:pointer;border:none;background:none;font-family:inherit}
 input,select{font-family:inherit}
-
-/* Topbar - simple sticky, no fixed, no max-width games */
 #topbar{background:#fff;border-bottom:1px solid #bbf7d0;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;width:100%}
 #topbar h1{font-size:15px;font-weight:700;color:#1c1917}
 #topbar-left{display:flex;align-items:center;gap:8px}
-
-/* Content */
 #content{padding:16px 16px 80px 16px;width:100%;overflow-x:hidden}
-
-/* Bottom nav - fixed */
 #bottomnav{background:#fff;border-top:1px solid #bbf7d0;position:fixed;bottom:0;left:0;right:0;display:flex;z-index:100}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;font-size:11px;font-weight:500;color:#a8a29e;border:none;background:none;cursor:pointer;position:relative}
 .nav-btn.active{color:#1c1917}
 .nav-btn.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:28px;height:2px;background:#14532d;border-radius:2px}
 .nav-icon{width:18px;height:18px}
-
-/* Role switcher */
 #role-menu-wrap{position:relative}
 #role-btn{display:flex;align-items:center;gap:4px;font-size:12px;border:1px solid #bbf7d0;border-radius:999px;padding:5px 10px;color:#57534e;background:#f0fdf4}
 #role-dropdown{position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #e7e5e4;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);overflow:hidden;min-width:110px;z-index:200;display:none}
 #role-dropdown.open{display:block}
 #role-dropdown button{display:block;width:100%;text-align:left;padding:9px 14px;font-size:13px;color:#1c1917}
 #role-dropdown button:hover{background:#f5f5f4}
-
-/* Cards */
 .card{background:#fff;border:1px solid #bbf7d0;border-radius:12px;margin-bottom:12px;overflow:hidden}
 .card-pad{padding:14px}
-
-/* Forms */
 .field{margin-bottom:12px}
 .label{font-size:11px;font-weight:600;color:#78716c;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px}
 .input{width:100%;border:1px solid #bbf7d0;border-radius:8px;padding:9px 12px;font-size:14px;color:#1c1917;outline:none;background:#fff}
 .input:focus{border-color:#86efac}
 .select{width:100%;border:1px solid #bbf7d0;border-radius:8px;padding:9px 12px;font-size:14px;color:#1c1917;outline:none;background:#fff;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8a29e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-
-/* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s}
 .btn:disabled{opacity:.4;cursor:default}
 .btn-dark{background:#15803d;color:#fff}
@@ -56,35 +42,23 @@ input,select{font-family:inherit}
 .btn-full{width:100%}
 .btn-danger{background:#fff;color:#ef4444;border:1px solid #fca5a5}
 .btn-danger:hover{background:#fef2f2}
-
-/* Chips */
 .chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
 .chip-gray{background:#f5f5f4;color:#78716c}
-
-/* Image upload */
 .img-upload{border:2px dashed #bbf7d0;border-radius:10px;width:100%;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative}
 .img-upload img{width:100%;height:100%;object-fit:contain;padding:8px}
 .img-upload-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:#a8a29e;font-size:12px}
 .img-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
-
-/* Product grid */
 .product-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .product-card{border:2px solid #bbf7d0;border-radius:10px;padding:8px;cursor:pointer;background:#fff;transition:border-color .15s;text-align:left;width:100%}
 .product-card.selected{border-color:#15803d;background:#f0fdf4}
 .product-card img{width:100%;height:72px;object-fit:contain;border-radius:6px;margin-bottom:6px;pointer-events:none}
 .product-card-name{font-size:11px;font-weight:700;color:#1c1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* Color pills */
 .color-pills{display:flex;flex-wrap:wrap;gap:8px}
 .color-pill{padding:6px 14px;border-radius:999px;border:2px solid #bbf7d0;font-size:13px;font-weight:500;color:#57534e;cursor:pointer;transition:all .15s}
 .color-pill.selected{border-color:#15803d;background:#15803d;color:#fff}
-
-/* Size grid */
 .size-grid{display:flex;flex-wrap:wrap;gap:8px}
 .size-btn{min-width:40px;height:40px;padding:0 6px;border-radius:8px;border:2px solid #bbf7d0;font-size:12px;font-weight:600;color:#57534e;cursor:pointer;transition:all .15s}
 .size-btn.selected{border-color:#15803d;background:#15803d;color:#fff}
-
-/* Size qty rows */
 .size-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0fdf4}
 .size-row:last-child{border-bottom:none}
 .size-label{font-size:13px;font-weight:600;color:#44403c;width:56px}
@@ -92,8 +66,6 @@ input,select{font-family:inherit}
 .qty-btn{width:32px;height:32px;border-radius:999px;border:1px solid #bbf7d0;display:flex;align-items:center;justify-content:center;font-size:16px;color:#57534e;cursor:pointer}
 .qty-btn:hover{background:#f0fdf4}
 .qty-input{width:48px;text-align:center;border:1px solid #bbf7d0;border-radius:8px;padding:5px;font-size:14px;font-weight:600;color:#1c1917}
-
-/* Inventory table */
 .inv-product{margin-bottom:24px}
 .inv-product-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .inv-product-title{display:flex;align-items:center;gap:8px}
@@ -123,8 +95,6 @@ input,select{font-family:inherit}
 .cell-ok:hover{background:#bbf7d0}
 .cell-selected{background:#15803d!important;color:#fff!important;box-shadow:0 0 0 2px #86efac}
 .cell-flash{background:#4ade80!important;color:#fff!important;transform:scale(1.15)}
-
-/* Transfer sheet */
 #transfer-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:200}
 #transfer-backdrop.open{display:block}
 #transfer-sheet{position:fixed;bottom:64px;left:0;right:0;z-index:201;padding:0 12px 8px;display:none}
@@ -138,34 +108,22 @@ input,select{font-family:inherit}
 .transfer-row .select{flex:1}
 .transfer-row .qty-input{width:64px;height:38px;font-size:14px}
 .transfer-err{font-size:11px;color:#ef4444;margin-top:6px}
-
-/* Store list */
 .store-row{display:flex;align-items:flex-start;flex-direction:column;gap:8px;background:#fff;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin-bottom:8px}
 .store-row-info{font-size:14px;font-weight:700;color:#1c1917}
 .store-row-sub{font-size:12px;color:#a8a29e}
-
-/* Product existing list */
 .existing-prod{background:#fff;border:1px solid #bbf7d0;border-radius:10px;padding:8px;display:flex;gap:10px;align-items:center;margin-bottom:8px}
 .existing-prod img{width:44px;height:44px;object-fit:contain;border-radius:6px;border:1px solid #bbf7d0;flex-shrink:0;pointer-events:none}
 .existing-prod-info{flex:1;min-width:0}
 .existing-prod-sku{font-size:13px;font-weight:700;color:#1c1917}
 .existing-prod-meta{font-size:11px;color:#a8a29e;margin-top:2px}
-
-/* Success screen */
 .success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;text-align:center;padding:24px}
 .success-icon{font-size:56px}
 .success-title{font-size:20px;font-weight:700;color:#1c1917}
 .success-sub{font-size:14px;color:#78716c}
-
-/* Section header */
 .section-title{font-size:11px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
 .divider{height:1px;background:#f0fdf4;margin:16px 0}
-
-/* Toast */
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#15803d;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1}
-
-/* Login screen */
 #login-screen{display:none;position:fixed;inset:0;background:linear-gradient(160deg,#052e16 0%,#14532d 50%,#166534 100%);z-index:500;align-items:center;justify-content:center;padding:24px}
 #login-screen.show{display:flex}
 .login-err{font-size:12px;color:#ef4444;margin-top:8px;min-height:16px}
@@ -250,21 +208,22 @@ input,select{font-family:inherit}
 
 <script>
 
-// ─── State ───────────────────────────────────────────────────────────────────
 const SIZE_PRESETS = {
   '16-36': Array.from({length:21}, (_,i)=>String(16+i)),
   '27-50': Array.from({length:24}, (_,i)=>String(27+i)),
   '7C-13': ['7C','8C','9C','10C','11C','12C','13C','1','2','3','4','5','6','7','8','9','10','11','12','13'],
 };
 
-
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw8EHmaEpXQQ-N2SkZZuLdiaCkXgZU59zrNkBa4jn7nmUQgDhaeIEgvcs4hrNpdz3qS_g/exec';
 
 function load(key, def) {
   try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; }
 }
-function save(key, val) {
-  localStorage.setItem(key, JSON.stringify(val));
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+// ── Helper: get image src — supports both old base64 and new URL ──
+function imgSrc(p) {
+  return p.imageUrl || p.imageData || '';
 }
 
 let state = {
@@ -286,10 +245,8 @@ function persist() {
   syncToSheet();
 }
 
-// ─── Transfer target ──────────────────────────────────────────────────────────
 let activeTransfer = null;
 
-// ─── Staff form state ─────────────────────────────────────────────────────────
 let staffState = {
   storeId: '',
   productId: '',
@@ -298,19 +255,16 @@ let staffState = {
   submitted: false,
 };
 
-// ─── Product form state ───────────────────────────────────────────────────────
 let prodState = {
   sku: '',
-  imageData: '',
+  imageUrl: '',
   color: '',
   sizePreset: '',
   selectedSizes: [],
 };
 
-// ─── Store form state ─────────────────────────────────────────────────────────
 let storeState = { id: '', name: '', pw: '' };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
 function getQty(storeId, productId, color, size) {
@@ -326,11 +280,8 @@ function setQty(storeId, productId, color, size, qty) {
     i.storeId === storeId && i.productId === productId &&
     i.color === color && i.size === size
   );
-  if (idx >= 0) {
-    state.inventory[idx].qty = qty;
-  } else {
-    state.inventory.push({ storeId, productId, color, size, qty, lastCountQty: qty });
-  }
+  if (idx >= 0) { state.inventory[idx].qty = qty; }
+  else { state.inventory.push({ storeId, productId, color, size, qty, lastCountQty: qty }); }
 }
 
 function setCountQty(storeId, productId, color, size, qty) {
@@ -371,8 +322,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-// ─── Role / Tab ───────────────────────────────────────────────────────────────
-
 function toggleRoleMenu() {
   document.getElementById('role-dropdown').classList.toggle('open');
 }
@@ -387,19 +336,14 @@ function setRole(role) {
   document.getElementById('role-dropdown').classList.remove('open');
   document.getElementById('role-btn-text').textContent = role === 'manager' ? 'Manager' : 'Staff';
   document.getElementById('bottomnav').style.display = role === 'manager' ? 'flex' : 'none';
-  if (role === 'manager') {
-    state.tab = 'inventory';
-    showTab('inventory');
-  } else {
-    renderStaff();
-  }
+  if (role === 'manager') { state.tab = 'inventory'; showTab('inventory'); }
+  else { renderStaff(); }
 }
 
 function showTab(tab) {
   state.tab = tab;
   ['inventory','products','stores'].forEach(t => {
-    const btn = document.getElementById('nav-' + t);
-    btn.classList.toggle('active', t === tab);
+    document.getElementById('nav-' + t).classList.toggle('active', t === tab);
   });
   closeTransfer();
   if (tab === 'inventory') renderInventory();
@@ -407,7 +351,6 @@ function showTab(tab) {
   else if (tab === 'stores') renderStores();
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────────────────
 function render() {
   if (state.role === 'staff') renderStaff();
   else showTab(state.tab);
@@ -426,10 +369,8 @@ function renderStaff() {
       </div>`;
     return;
   }
-
   const currentStore = state.stores.find(s => s.id === staffState.storeId);
   const storeLabel = currentStore ? (currentStore.name && currentStore.name !== currentStore.id ? currentStore.name : currentStore.id) : '';
-
   let html = `<div style="padding-top:8px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div style="display:flex;align-items:center;gap:8px">
@@ -438,28 +379,23 @@ function renderStaff() {
         <div style="font-size:12px;color:#a8a29e">${storeLabel}</div></div>
       </div>
     </div>`;
-
-  // Product grid — always show (store pre-set from login)
-  html += `<div class="card card-pad">
-    <div class="label">Product</div>`;
+  html += `<div class="card card-pad"><div class="label">Product</div>`;
   if (state.products.length === 0) {
     html += `<div style="font-size:13px;color:#a8a29e;font-style:italic">No products yet. Ask your manager.</div>`;
   } else {
     html += `<div class="product-grid">`;
     state.products.forEach(p => {
-      // Count filled sizes for this store+product
       const filledItems = state.inventory.filter(i =>
-        i.storeId === staffState.storeId && i.productId === p.id &&
-        i.lastCountQty !== undefined
+        i.storeId === staffState.storeId && i.productId === p.id && i.lastCountQty !== undefined
       );
       const totalFilled = filledItems.reduce((sum, i) => sum + (i.lastCountQty || 0), 0);
       const hasFilled = filledItems.length > 0;
       const isSelected = staffState.productId === p.id;
       const isLocked = state.lockedProducts.includes(p.id);
       html += `<button class="product-card ${isSelected?'selected':''}" ${isLocked ? 'disabled style="opacity:0.5;cursor:not-allowed"' : `onclick="staffSetProduct('${p.id}')"`}>
-        <img src="${p.imageData}" alt="${p.sku}" style="pointer-events:none"/>
+        <img src="${imgSrc(p)}" alt="${p.sku}" style="pointer-events:none"/>
         <div class="product-card-name">${p.sku}</div>
-        ${state.lockedProducts.includes(p.id)
+        ${isLocked
           ? `<div style="margin-top:4px;font-size:10px;font-weight:700;color:#dc2626;background:#fef2f2;border-radius:4px;padding:2px 5px;display:inline-block">🔒 Locked</div>`
           : hasFilled
             ? `<div style="margin-top:4px;font-size:10px;font-weight:700;color:#16a34a;background:#f0fdf4;border-radius:4px;padding:2px 5px;display:inline-block">✓ ${totalFilled} pcs</div>`
@@ -470,22 +406,17 @@ function renderStaff() {
     html += `</div>`;
   }
   html += `</div>`;
-
   const prod = state.products.find(p => p.id === staffState.productId);
   if (prod) {
-    html += `<div class="card card-pad">
-      <div class="label">Color</div>
-      <div class="color-pills">`;
+    html += `<div class="card card-pad"><div class="label">Color</div><div class="color-pills">`;
     prod.variants.forEach(v => {
       html += `<button class="color-pill ${staffState.color===v.color?'selected':''}" onclick="staffSetColor('${v.color}')">${v.color}</button>`;
     });
     html += `</div></div>`;
   }
-
   const variant = prod?.variants.find(v => v.color === staffState.color);
   if (variant) {
-    html += `<div class="card card-pad">
-      <div class="label" style="margin-bottom:8px">Current Stock Per Size</div>`;
+    html += `<div class="card card-pad"><div class="label" style="margin-bottom:8px">Current Stock Per Size</div>`;
     variant.sizes.forEach(({ size }) => {
       const q = staffState.sizeQtys[size] ?? 0;
       html += `<div class="size-row">
@@ -503,7 +434,6 @@ function renderStaff() {
       <button class="btn btn-dark btn-full" onclick="staffSubmit()">Submit</button>
     </div>`;
   }
-
   html += `</div>`;
   c.innerHTML = html;
 }
@@ -511,13 +441,9 @@ function renderStaff() {
 function staffSetOutOfStock() {
   const prod = state.products.find(p => p.id === staffState.productId);
   if (!prod || !staffState.storeId || !staffState.color) return;
-  if (state.lockedProducts.includes(staffState.productId)) {
-    showToast('This product is locked by manager');
-    return;
-  }
+  if (state.lockedProducts.includes(staffState.productId)) { showToast('This product is locked by manager'); return; }
   const variant = prod.variants.find(v => v.color === staffState.color);
   if (!variant) return;
-  // Set all sizes to 0
   variant.sizes.forEach(({ size }) => {
     staffState.sizeQtys[size] = 0;
     setCountQty(staffState.storeId, prod.id, staffState.color, size, 0);
@@ -547,15 +473,9 @@ function staffSetSize(size, val) {
 function staffSubmit() {
   const prod = state.products.find(p => p.id === staffState.productId);
   if (!prod || !staffState.storeId || !staffState.color) return;
-  if (state.lockedProducts.includes(staffState.productId)) {
-    showToast('This product is locked by manager');
-    return;
-  }
+  if (state.lockedProducts.includes(staffState.productId)) { showToast('This product is locked by manager'); return; }
   const totalQty = Object.values(staffState.sizeQtys).reduce((s,v)=>s+(v||0),0);
-  if (totalQty === 0) {
-    showToast('Total must be > 0. Use "Out of Stock" to submit all zeros.');
-    return;
-  }
+  if (totalQty === 0) { showToast('Total must be > 0. Use "Out of Stock" to submit all zeros.'); return; }
   const variant = prod.variants.find(v => v.color === staffState.color);
   if (!variant) return;
   variant.sizes.forEach(({ size }) => {
@@ -573,27 +493,21 @@ function renderInventory() {
     c.innerHTML = `<div class="success-screen"><div style="font-size:40px;opacity:.2">📦</div><div style="font-size:14px;color:#a8a29e">No products yet.</div></div>`;
     return;
   }
-
   let html = '';
-
-  // Log bar
   if (state.transferLogs.length > 0) {
     html += `<div id="log-bar" class="show">
       <span style="font-size:13px">${state.transferLogs.length} transfer${state.transferLogs.length>1?'s':''} this session</span>
       <div class="log-bar-btns">
-        <button class="btn btn-sm" style="background:#fff;color:#1c1917;font-size:12px" onclick="printReport()">
-          📄 Print Report
-        </button>
+        <button class="btn btn-sm" style="background:#fff;color:#1c1917;font-size:12px" onclick="printReport()">📄 Print Report</button>
         <button class="btn btn-sm" style="color:#a8a29e;font-size:12px" onclick="clearLogs()">Clear</button>
       </div>
     </div>`;
   }
-
   state.products.forEach(prod => {
     html += `<div class="inv-product">
       <div class="inv-product-header">
         <div class="inv-product-title">
-          <img src="${prod.imageData}" alt="${prod.sku}"/>
+          <img src="${imgSrc(prod)}" alt="${prod.sku}"/>
           <span>${prod.sku}</span>
         </div>
         <div class="inv-product-actions">
@@ -604,46 +518,36 @@ function renderInventory() {
           }
         </div>
       </div>`;
-
     prod.variants.forEach(variant => {
       html += `<div class="inv-color-label">${variant.color}</div>
-        <div class="inv-table-wrap"><div class="table-scroll"><table class="inv-table"><thead><tr>
-          <th>Store</th>`;
+        <div class="inv-table-wrap"><div class="table-scroll"><table class="inv-table"><thead><tr><th>Store</th>`;
       variant.sizes.forEach(({ size }) => { html += `<th>${size}</th>`; });
       html += `</tr></thead><tbody>`;
-
       state.stores.forEach((store, si) => {
-        html += `<tr>
-          <td style="${si%2===1?'background:#f0fdf4':''}">${store.id}</td>`;
+        html += `<tr><td style="${si%2===1?'background:#f0fdf4':''}">${store.id}</td>`;
         variant.sizes.forEach(({ size }) => {
           const q = getQty(store.id, prod.id, variant.color, size);
           const cls = q===0?'cell-zero':q<=2?'cell-low':q<=5?'cell-mid':'cell-ok';
           const cellId = `cell-${store.id}-${prod.id}-${variant.color}-${size}`.replace(/[^a-zA-Z0-9-]/g,'_');
           html += `<td style="${si%2===1?'background:#f0fdf4':''}">
-            <button class="cell-btn ${cls}" id="${cellId}"
-              ${q===0?'disabled':''}
+            <button class="cell-btn ${cls}" id="${cellId}" ${q===0?'disabled':''}
               onclick="openTransfer('${store.id}','${prod.id}','${variant.color}','${size}',${q})">
               ${q===0?'—':q}
             </button></td>`;
         });
         html += `</tr>`;
       });
-
       html += `</tbody></table></div></div>`;
     });
-
     html += `</div>`;
   });
-
   c.innerHTML = html;
 }
 
 function openTransfer(fromStoreId, productId, color, size, available) {
   activeTransfer = { fromStoreId, productId, color, size, available };
-  const prod = state.products.find(p => p.id === productId);
   document.getElementById('transfer-sub').textContent =
     `From ${fromStoreId} · ${color} · Size ${size} · ${available} available`;
-
   const sel = document.getElementById('transfer-to');
   sel.innerHTML = `<option value="">To store...</option>`;
   state.stores.filter(s => s.id !== fromStoreId).forEach(s => {
@@ -653,11 +557,8 @@ function openTransfer(fromStoreId, productId, color, size, available) {
   document.getElementById('transfer-qty').value = '';
   document.getElementById('transfer-err').textContent = '';
   document.getElementById('transfer-confirm').disabled = true;
-
   document.getElementById('transfer-backdrop').classList.add('open');
   document.getElementById('transfer-sheet').classList.add('open');
-
-  // Highlight selected cell
   document.querySelectorAll('.cell-selected').forEach(el => el.classList.remove('cell-selected'));
   const cellId = `cell-${fromStoreId}-${productId}-${color}-${size}`.replace(/[^a-zA-Z0-9-]/g,'_');
   const el = document.getElementById(cellId);
@@ -691,21 +592,15 @@ function doTransfer() {
   const toStore = document.getElementById('transfer-to').value;
   const qty = parseInt(document.getElementById('transfer-qty').value);
   if (!toStore || !qty || qty <= 0 || qty > activeTransfer.available) return;
-
   const { fromStoreId, productId, color, size } = activeTransfer;
   const prod = state.products.find(p => p.id === productId);
-
   deltaQty(fromStoreId, productId, color, size, -qty);
   deltaQty(toStore, productId, color, size, qty);
-
   state.transferLogs.unshift({
-    id: uid(),
-    fromStoreId, toStoreId: toStore, productId,
-    sku: prod?.sku ?? '',
-    color, size, qty,
+    id: uid(), fromStoreId, toStoreId: toStore, productId,
+    sku: prod?.sku ?? '', color, size, qty,
     createdAt: new Date().toISOString(),
   });
-
   persist();
   closeTransfer();
   showToast(`Moved ${qty} × Size ${size} from ${fromStoreId} → ${toStore}`);
@@ -725,59 +620,31 @@ function resetProduct(productId) {
 
 function deleteProductInv(productId) {
   state.inventory = state.inventory.filter(i => i.productId !== productId);
-  persist();
-  renderInventory();
-}
-
-function deleteStoreInv(storeId, productId, color) {
-  state.inventory = state.inventory.filter(i =>
-    !(i.storeId===storeId && i.productId===productId && i.color===color)
-  );
-  persist();
-  renderInventory();
+  persist(); renderInventory();
 }
 
 function clearLogs() {
   state.transferLogs = [];
-  persist();
-  renderInventory();
+  persist(); renderInventory();
 }
 
 function printReport() {
   const rows = state.transferLogs.map(log => `
     <tr>
-      <td>${formatDate(log.createdAt)}</td>
-      <td><strong>${log.sku}</strong></td>
-      <td>${log.color}</td>
-      <td>${log.size}</td>
-      <td>${log.qty}</td>
-      <td>${log.fromStoreId}</td>
-      <td>→ ${log.toStoreId}</td>
+      <td>${formatDate(log.createdAt)}</td><td><strong>${log.sku}</strong></td>
+      <td>${log.color}</td><td>${log.size}</td><td>${log.qty}</td>
+      <td>${log.fromStoreId}</td><td>→ ${log.toStoreId}</td>
     </tr>`).join('');
-
   const win = window.open('', '_blank');
   if (!win) { showToast('Allow popups to print'); return; }
   win.document.write(`<!DOCTYPE html><html><head><title>Transfer Report</title>
-  <style>
-    body{font-family:Arial,sans-serif;padding:32px;color:#1a1a1a}
-    h1{font-size:20px;margin-bottom:4px}
-    .sub{font-size:12px;color:#888;margin-bottom:28px}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    th{text-align:left;padding:8px 10px;background:#f4f4f4;border-bottom:2px solid #ddd;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#555}
-    td{padding:8px 10px;border-bottom:1px solid #eee}
-    tr:last-child td{border-bottom:none}
-    .footer{margin-top:32px;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:12px}
-    @media print{body{padding:16px}}
-  </style></head><body>
+  <style>body{font-family:Arial,sans-serif;padding:32px;color:#1a1a1a}h1{font-size:20px;margin-bottom:4px}.sub{font-size:12px;color:#888;margin-bottom:28px}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;padding:8px 10px;background:#f4f4f4;border-bottom:2px solid #ddd;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#555}td{padding:8px 10px;border-bottom:1px solid #eee}tr:last-child td{border-bottom:none}.footer{margin-top:32px;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:12px}@media print{body{padding:16px}}</style></head><body>
   <h1>Stock Transfer Report</h1>
   <p class="sub">Generated: ${formatDate(new Date().toISOString())} &nbsp;·&nbsp; ${state.transferLogs.length} transfer(s)</p>
-  <table>
-    <thead><tr><th>Date / Time</th><th>SKU</th><th>Color</th><th>Size</th><th>Qty</th><th>From</th><th>To</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
+  <table><thead><tr><th>Date / Time</th><th>SKU</th><th>Color</th><th>Size</th><th>Qty</th><th>From</th><th>To</th></tr></thead>
+  <tbody>${rows}</tbody></table>
   <div class="footer">StockFlow · Printed ${new Date().toLocaleDateString()}</div>
-  <script>window.onload=()=>window.print()<\/script>
-  </body></html>`);
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
   win.document.close();
 }
 
@@ -785,14 +652,13 @@ function printReport() {
 function renderProducts() {
   const c = document.getElementById('content');
   let html = '';
-
   if (state.products.length > 0) {
     html += `<div class="section-title">${state.products.length} Product${state.products.length>1?'s':''}</div>`;
     state.products.forEach(p => {
       const color = p.variants[0]?.color ?? '';
       const sizes = p.variants[0]?.sizes.map(s=>s.size).join(', ') ?? '';
       html += `<div class="existing-prod">
-        <img src="${p.imageData}" alt="${p.sku}" style="pointer-events:none"/>
+        <img src="${imgSrc(p)}" alt="${p.sku}" style="pointer-events:none"/>
         <div class="existing-prod-info">
           <div class="existing-prod-sku">${p.sku}</div>
           <div class="existing-prod-meta">${color} · ${sizes}</div>
@@ -802,7 +668,6 @@ function renderProducts() {
     });
     html += `<div class="divider"></div>`;
   }
-
   html += `<div class="section-title">Add Product</div>
   <div class="card card-pad">
     <div class="field">
@@ -812,8 +677,8 @@ function renderProducts() {
     <div class="field">
       <div class="label">Product Image</div>
       <label class="img-upload" id="img-upload-label">
-        ${prodState.imageData
-          ? `<img src="${prodState.imageData}" alt="preview"/>`
+        ${prodState.imageUrl
+          ? `<img src="${prodState.imageUrl}" alt="preview"/>`
           : `<div class="img-upload-placeholder"><span style="font-size:28px">🖼️</span><span>Tap to upload image</span></div>`}
         <input type="file" accept="image/*" onchange="handleImageUpload(this)"/>
       </label>
@@ -833,7 +698,6 @@ function renderProducts() {
     </div>
     <button class="btn btn-dark btn-full" onclick="saveProduct()">Add Product</button>
   </div>`;
-
   c.innerHTML = html;
   renderSizeGrid();
 }
@@ -864,10 +728,8 @@ function toggleSize(s) {
 function handleImageUpload(input) {
   const file = input.files[0];
   if (!file) return;
-
   const label = document.getElementById('img-upload-label');
   if (label) label.innerHTML = `<div class="img-upload-placeholder"><span style="font-size:28px">⏳</span><span>Uploading...</span></div><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
-
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
@@ -879,11 +741,8 @@ function handleImageUpload(input) {
       const canvas = document.createElement('canvas');
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-
-      // Strip the "data:image/jpeg;base64," prefix — send raw base64 only
       const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
       const filename = 'product_' + Date.now() + '.jpg';
-
       fetch(SHEET_URL, {
         method: 'POST',
         body: JSON.stringify({ action: 'uploadImage', base64, filename }),
@@ -892,8 +751,8 @@ function handleImageUpload(input) {
       .then(res => {
         if (res.ok && res.url) {
           prodState.imageUrl = res.url;
-          const label = document.getElementById('img-upload-label');
-          if (label) label.innerHTML = `<img src="${res.url}" alt="preview"/><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
+          const lbl = document.getElementById('img-upload-label');
+          if (lbl) lbl.innerHTML = `<img src="${res.url}" alt="preview"/><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
           showToast('Image uploaded ✓');
         } else {
           showToast('Upload failed: ' + (res.error || 'unknown'));
@@ -909,19 +768,15 @@ function handleImageUpload(input) {
 function saveProduct() {
   const sku = (document.getElementById('prod-sku')?.value || prodState.sku).trim().toUpperCase();
   const color = (document.getElementById('prod-color')?.value || prodState.color).trim();
-
   if (!sku || !prodState.imageUrl || !color || prodState.selectedSizes.length === 0) {
-    showToast('Fill in all fields');
-    return;
+    showToast('Fill in all fields'); return;
   }
-
   const product = {
     id: uid(), sku,
-    imageUrl: prodState.imageUrl,   // ← URL, not base64
+    imageUrl: prodState.imageUrl,
     variants: [{ color, sizes: prodState.selectedSizes.map(size => ({ size, qty: 0 })) }],
     createdAt: new Date().toISOString(),
   };
-
   state.products.unshift(product);
   persist();
   prodState = { sku:'', imageUrl:'', color:'', sizePreset:'', selectedSizes:[] };
@@ -934,15 +789,13 @@ function deleteProduct(id) {
   if (!confirm(`Delete product "${p?.sku}"? This will also remove all its inventory.`)) return;
   state.products = state.products.filter(p => p.id !== id);
   state.inventory = state.inventory.filter(i => i.productId !== id);
-  persist();
-  renderProducts();
+  persist(); renderProducts();
 }
 
 // ─── STORES VIEW ──────────────────────────────────────────────────────────────
 function renderStores() {
   const c = document.getElementById('content');
   let html = '';
-
   if (state.stores.length > 0) {
     html += `<div class="section-title">${state.stores.length} Store${state.stores.length>1?'s':''}</div>`;
     state.stores.forEach(s => {
@@ -957,15 +810,13 @@ function renderStores() {
         </div>
         <div style="display:flex;gap:8px;width:100%;align-items:center">
           <span style="font-size:11px;font-weight:600;color:#a8a29e;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">Password</span>
-          <input class="input" id="pw-store-${s.id}" type="text" value="${pw}"
-            placeholder="Not set" style="flex:1;font-size:13px;padding:6px 10px"/>
+          <input class="input" id="pw-store-${s.id}" type="text" value="${pw}" placeholder="Not set" style="flex:1;font-size:13px;padding:6px 10px"/>
           <button class="btn btn-dark btn-sm" onclick="savePw('store_${s.id}')" style="flex-shrink:0">Save</button>
         </div>
       </div>`;
     });
     html += `<div class="divider"></div>`;
   }
-
   html += `<div class="section-title">Add Store</div>
   <div class="card card-pad">
     <div class="field">
@@ -993,12 +844,10 @@ function renderStores() {
   <div class="section-title">Manager Password</div>
   <div class="card card-pad">
     <div style="display:flex;gap:8px;align-items:center">
-      <input class="input" id="pw-manager" type="text"
-        value="${load('pw_manager','')}" placeholder="Not set" style="flex:1"/>
+      <input class="input" id="pw-manager" type="text" value="${load('pw_manager','')}" placeholder="Not set" style="flex:1"/>
       <button class="btn btn-dark btn-sm" onclick="savePw('manager')" style="flex-shrink:0">Save</button>
     </div>
   </div>`;
-
   c.innerHTML = html;
 }
 
@@ -1021,8 +870,7 @@ function deleteStore(id) {
   const s = state.stores.find(x => x.id === id);
   if (!confirm(`Remove store "${s?.id}"?`)) return;
   state.stores = state.stores.filter(s => s.id !== id);
-  persist();
-  renderStores();
+  persist(); renderStores();
 }
 
 function savePw(key) {
@@ -1032,11 +880,10 @@ function savePw(key) {
   localStorage.setItem('pw_' + key, val);
   const label = key === 'manager' ? 'Manager' : key.replace('store_','');
   showToast(label + ' password saved');
-  persist(); // sync to Google Sheets
+  persist();
   renderStores();
 }
 
-// ─── LOGIN ────────────────────────────────────────────────────────────────────
 function showLogin() {
   document.getElementById('login-screen').classList.add('show');
   document.getElementById('login-pw').value = '';
@@ -1050,36 +897,23 @@ function hideLogin() {
 function doLogin() {
   const pw = document.getElementById('login-pw').value;
   const err = document.getElementById('login-err');
-
-  // Manager priority
   const managerPw = localStorage.getItem('pw_manager') || '';
   if (!managerPw) {
-    // No manager pw set — allow entry as manager
-    hideLogin();
-    setRole('manager');
+    hideLogin(); setRole('manager');
     showToast('No password set. Please set one in Stores.');
     return;
   }
-  if (pw === managerPw) {
-    hideLogin();
-    setRole('manager');
-    return;
-  }
-
-  // Try store passwords
+  if (pw === managerPw) { hideLogin(); setRole('manager'); return; }
   const stores = JSON.parse(localStorage.getItem('stores') || '[]');
   const matched = stores.find(s => {
     const stored = localStorage.getItem('pw_store_' + s.id) || '';
     return stored && pw === stored;
   });
   if (matched) {
-    hideLogin();
-    setRole('staff');
+    hideLogin(); setRole('staff');
     staffState.storeId = matched.id;
-    renderStaff();
-    return;
+    renderStaff(); return;
   }
-
   err.textContent = 'Wrong password.';
 }
 
@@ -1091,15 +925,9 @@ function logout() {
 
 function toggleLock(productId) {
   const idx = state.lockedProducts.indexOf(productId);
-  if (idx >= 0) {
-    state.lockedProducts.splice(idx, 1);
-    showToast('Product unlocked');
-  } else {
-    state.lockedProducts.push(productId);
-    showToast('Product locked — staff cannot update stock');
-  }
-  persist();
-  renderInventory();
+  if (idx >= 0) { state.lockedProducts.splice(idx, 1); showToast('Product unlocked'); }
+  else { state.lockedProducts.push(productId); showToast('Product locked — staff cannot update stock'); }
+  persist(); renderInventory();
 }
 
 async function syncFromSheet() {
@@ -1128,7 +956,6 @@ async function syncToSheet() {
     const passwords = { manager: localStorage.getItem('pw_manager') || '' };
     state.stores.forEach(s => { passwords['store_' + s.id] = localStorage.getItem('pw_store_' + s.id) || ''; });
     const body = JSON.stringify({
-      action: 'save',
       stores: state.stores,
       products: state.products,
       inventory: state.inventory,
@@ -1142,7 +969,6 @@ async function syncToSheet() {
   }
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 if (!localStorage.getItem('pw_manager')) {
   localStorage.setItem('pw_manager', 'admin');
 }
