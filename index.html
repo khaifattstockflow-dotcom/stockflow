@@ -864,11 +864,14 @@ function toggleSize(s) {
 function handleImageUpload(input) {
   const file = input.files[0];
   if (!file) return;
+
+  const label = document.getElementById('img-upload-label');
+  if (label) label.innerHTML = `<div class="img-upload-placeholder"><span style="font-size:28px">⏳</span><span>Uploading...</span></div><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
+
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
-      // Downscale to max 400px and re-encode as JPEG q0.7 to keep base64 small (~15-30KB)
       const MAX = 400;
       let { width, height } = img;
       if (width > height && width > MAX) { height = Math.round(height * MAX / width); width = MAX; }
@@ -876,9 +879,27 @@ function handleImageUpload(input) {
       const canvas = document.createElement('canvas');
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-      prodState.imageData = canvas.toDataURL('image/jpeg', 0.7);
-      const label = document.getElementById('img-upload-label');
-      if (label) label.innerHTML = `<img src="${prodState.imageData}" alt="preview"/><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
+
+      // Strip the "data:image/jpeg;base64," prefix — send raw base64 only
+      const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+      const filename = 'product_' + Date.now() + '.jpg';
+
+      fetch(SHEET_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'uploadImage', base64, filename }),
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.ok && res.url) {
+          prodState.imageUrl = res.url;
+          const label = document.getElementById('img-upload-label');
+          if (label) label.innerHTML = `<img src="${res.url}" alt="preview"/><input type="file" accept="image/*" onchange="handleImageUpload(this)"/>`;
+          showToast('Image uploaded ✓');
+        } else {
+          showToast('Upload failed: ' + (res.error || 'unknown'));
+        }
+      })
+      .catch(() => showToast('Upload failed — check connection'));
     };
     img.src = e.target.result;
   };
@@ -888,19 +909,22 @@ function handleImageUpload(input) {
 function saveProduct() {
   const sku = (document.getElementById('prod-sku')?.value || prodState.sku).trim().toUpperCase();
   const color = (document.getElementById('prod-color')?.value || prodState.color).trim();
-  if (!sku || !prodState.imageData || !color || prodState.selectedSizes.length===0) {
+
+  if (!sku || !prodState.imageUrl || !color || prodState.selectedSizes.length === 0) {
     showToast('Fill in all fields');
     return;
   }
+
   const product = {
     id: uid(), sku,
-    imageData: prodState.imageData,
+    imageUrl: prodState.imageUrl,   // ← URL, not base64
     variants: [{ color, sizes: prodState.selectedSizes.map(size => ({ size, qty: 0 })) }],
     createdAt: new Date().toISOString(),
   };
+
   state.products.unshift(product);
   persist();
-  prodState = { sku:'', imageData:'', color:'', sizePreset:'', selectedSizes:[] };
+  prodState = { sku:'', imageUrl:'', color:'', sizePreset:'', selectedSizes:[] };
   showToast('Product added');
   renderProducts();
 }
