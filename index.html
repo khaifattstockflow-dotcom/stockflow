@@ -498,11 +498,34 @@ function renderStaff() {
       </div>`;
     });
     html += `</div>
-    <button class="btn btn-dark btn-full" onclick="staffSubmit()">Submit Stock Count</button>`;
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-outline btn-full" onclick="staffSetOutOfStock()" style="color:#ef4444;border-color:#fca5a5">Out of Stock</button>
+      <button class="btn btn-dark btn-full" onclick="staffSubmit()">Submit</button>
+    </div>`;
   }
 
   html += `</div>`;
   c.innerHTML = html;
+}
+
+function staffSetOutOfStock() {
+  const prod = state.products.find(p => p.id === staffState.productId);
+  if (!prod || !staffState.storeId || !staffState.color) return;
+  if (state.lockedProducts.includes(staffState.productId)) {
+    showToast('This product is locked by manager');
+    return;
+  }
+  const variant = prod.variants.find(v => v.color === staffState.color);
+  if (!variant) return;
+  // Set all sizes to 0
+  variant.sizes.forEach(({ size }) => {
+    staffState.sizeQtys[size] = 0;
+    setCountQty(staffState.storeId, prod.id, staffState.color, size, 0);
+  });
+  persist();
+  staffState.submitted = true;
+  showToast('Marked as Out of Stock');
+  renderStaff();
 }
 
 function staffReset() {
@@ -526,6 +549,11 @@ function staffSubmit() {
   if (!prod || !staffState.storeId || !staffState.color) return;
   if (state.lockedProducts.includes(staffState.productId)) {
     showToast('This product is locked by manager');
+    return;
+  }
+  const totalQty = Object.values(staffState.sizeQtys).reduce((s,v)=>s+(v||0),0);
+  if (totalQty === 0) {
+    showToast('Total must be > 0. Use "Out of Stock" to submit all zeros.');
     return;
   }
   const variant = prod.variants.find(v => v.color === staffState.color);
