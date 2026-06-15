@@ -221,10 +221,8 @@ function load(key, def) {
 }
 function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
-// ── Helper: get image src — supports both old base64 and new URL ──
-function imgSrc(p) {
-  return p.imageUrl || p.imageData || '';
-}
+// Supports both old base64 (imageData) and new Drive URL (imageUrl)
+function imgSrc(p) { return p.imageUrl || p.imageData || ''; }
 
 let state = {
   role: 'staff',
@@ -275,15 +273,6 @@ function getQty(storeId, productId, color, size) {
   return item ? item.qty : 0;
 }
 
-function setQty(storeId, productId, color, size, qty) {
-  const idx = state.inventory.findIndex(i =>
-    i.storeId === storeId && i.productId === productId &&
-    i.color === color && i.size === size
-  );
-  if (idx >= 0) { state.inventory[idx].qty = qty; }
-  else { state.inventory.push({ storeId, productId, color, size, qty, lastCountQty: qty }); }
-}
-
 function setCountQty(storeId, productId, color, size, qty) {
   const idx = state.inventory.findIndex(i =>
     i.storeId === storeId && i.productId === productId &&
@@ -322,6 +311,37 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
+// ─── SESSION ──────────────────────────────────────────────────────────────────
+function saveSession(role, storeId) {
+  localStorage.setItem('session_role', role);
+  localStorage.setItem('session_store', storeId || '');
+}
+
+function clearSession() {
+  localStorage.removeItem('session_role');
+  localStorage.removeItem('session_store');
+}
+
+function restoreSession() {
+  const role = localStorage.getItem('session_role');
+  const storeId = localStorage.getItem('session_store');
+  if (role === 'manager') {
+    setRole('manager');
+    return true;
+  }
+  if (role === 'staff' && storeId) {
+    // Validate the store still exists
+    const storeExists = state.stores.find(s => s.id === storeId);
+    if (storeExists) {
+      staffState.storeId = storeId;
+      setRole('staff');
+      return true;
+    }
+  }
+  return false;
+}
+
+// ─── ROLE / TAB ───────────────────────────────────────────────────────────────
 function toggleRoleMenu() {
   document.getElementById('role-dropdown').classList.toggle('open');
 }
@@ -349,11 +369,6 @@ function showTab(tab) {
   if (tab === 'inventory') renderInventory();
   else if (tab === 'products') renderProducts();
   else if (tab === 'stores') renderStores();
-}
-
-function render() {
-  if (state.role === 'staff') renderStaff();
-  else showTab(state.tab);
 }
 
 // ─── STAFF VIEW ───────────────────────────────────────────────────────────────
@@ -459,7 +474,6 @@ function staffReset() {
   staffState = { storeId: keepStore, productId:'', color:'', sizeQtys:{}, submitted:false };
   renderStaff();
 }
-function staffSetStore(v) { staffState.storeId = v; staffState.productId=''; staffState.color=''; staffState.sizeQtys={}; renderStaff(); }
 function staffSetProduct(id) { staffState.productId = id; staffState.color=''; staffState.sizeQtys={}; renderStaff(); }
 function staffSetColor(c) { staffState.color = c; staffState.sizeQtys={}; renderStaff(); }
 function staffAdjSize(size, delta) {
@@ -560,8 +574,7 @@ function openTransfer(fromStoreId, productId, color, size, available) {
   document.getElementById('transfer-backdrop').classList.add('open');
   document.getElementById('transfer-sheet').classList.add('open');
   document.querySelectorAll('.cell-selected').forEach(el => el.classList.remove('cell-selected'));
-  const cellId = `cell-${fromStoreId}-${productId}-${color}-${size}`.replace(/[^a-zA-Z0-9-]/g,'_');
-  const el = document.getElementById(cellId);
+  const el = document.getElementById(`cell-${fromStoreId}-${productId}-${color}-${size}`.replace(/[^a-zA-Z0-9-]/g,'_'));
   if (el) el.classList.add('cell-selected');
 }
 
@@ -618,15 +631,7 @@ function resetProduct(productId) {
   renderInventory();
 }
 
-function deleteProductInv(productId) {
-  state.inventory = state.inventory.filter(i => i.productId !== productId);
-  persist(); renderInventory();
-}
-
-function clearLogs() {
-  state.transferLogs = [];
-  persist(); renderInventory();
-}
+function clearLogs() { state.transferLogs = []; persist(); renderInventory(); }
 
 function printReport() {
   const rows = state.transferLogs.map(log => `
@@ -640,7 +645,7 @@ function printReport() {
   win.document.write(`<!DOCTYPE html><html><head><title>Transfer Report</title>
   <style>body{font-family:Arial,sans-serif;padding:32px;color:#1a1a1a}h1{font-size:20px;margin-bottom:4px}.sub{font-size:12px;color:#888;margin-bottom:28px}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;padding:8px 10px;background:#f4f4f4;border-bottom:2px solid #ddd;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#555}td{padding:8px 10px;border-bottom:1px solid #eee}tr:last-child td{border-bottom:none}.footer{margin-top:32px;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:12px}@media print{body{padding:16px}}</style></head><body>
   <h1>Stock Transfer Report</h1>
-  <p class="sub">Generated: ${formatDate(new Date().toISOString())} &nbsp;·&nbsp; ${state.transferLogs.length} transfer(s)</p>
+  <p class="sub">Generated: ${formatDate(new Date().toISOString())} · ${state.transferLogs.length} transfer(s)</p>
   <table><thead><tr><th>Date / Time</th><th>SKU</th><th>Color</th><th>Size</th><th>Qty</th><th>From</th><th>To</th></tr></thead>
   <tbody>${rows}</tbody></table>
   <div class="footer">StockFlow · Printed ${new Date().toLocaleDateString()}</div>
@@ -702,18 +707,13 @@ function renderProducts() {
   renderSizeGrid();
 }
 
-function selectPreset(key) {
-  prodState.sizePreset = key;
-  prodState.selectedSizes = [];
-  renderProducts();
-}
+function selectPreset(key) { prodState.sizePreset = key; prodState.selectedSizes = []; renderProducts(); }
 
 function renderSizeGrid() {
   const el = document.getElementById('size-grid');
   if (!el) return;
   if (!prodState.sizePreset) { el.innerHTML = ''; return; }
-  const sizes = SIZE_PRESETS[prodState.sizePreset];
-  el.innerHTML = sizes.map(s => `
+  el.innerHTML = SIZE_PRESETS[prodState.sizePreset].map(s => `
     <button class="size-btn ${prodState.selectedSizes.includes(s)?'selected':''}"
       onclick="toggleSize('${s}')">${s}</button>`).join('');
 }
@@ -742,10 +742,9 @@ function handleImageUpload(input) {
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
       const base64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
-      const filename = 'product_' + Date.now() + '.jpg';
       fetch(SHEET_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'uploadImage', base64, filename }),
+        body: JSON.stringify({ action: 'uploadImage', base64, filename: 'product_' + Date.now() + '.jpg' }),
       })
       .then(r => r.json())
       .then(res => {
@@ -771,13 +770,12 @@ function saveProduct() {
   if (!sku || !prodState.imageUrl || !color || prodState.selectedSizes.length === 0) {
     showToast('Fill in all fields'); return;
   }
-  const product = {
+  state.products.unshift({
     id: uid(), sku,
     imageUrl: prodState.imageUrl,
     variants: [{ color, sizes: prodState.selectedSizes.map(size => ({ size, qty: 0 })) }],
     createdAt: new Date().toISOString(),
-  };
-  state.products.unshift(product);
+  });
   persist();
   prodState = { sku:'', imageUrl:'', color:'', sizePreset:'', selectedSizes:[] };
   showToast('Product added');
@@ -800,7 +798,7 @@ function renderStores() {
     html += `<div class="section-title">${state.stores.length} Store${state.stores.length>1?'s':''}</div>`;
     state.stores.forEach(s => {
       const pw = localStorage.getItem('pw_store_' + s.id) || '';
-      html += `<div class="store-row" style="align-items:flex-start;flex-direction:column;gap:8px">
+      html += `<div class="store-row">
         <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
           <div>
             <div class="store-row-info">${s.id}</div>
@@ -878,12 +876,11 @@ function savePw(key) {
   const val = document.getElementById(inputId)?.value.trim();
   if (!val) { showToast('Password cannot be empty'); return; }
   localStorage.setItem('pw_' + key, val);
-  const label = key === 'manager' ? 'Manager' : key.replace('store_','');
-  showToast(label + ' password saved');
-  persist();
-  renderStores();
+  showToast((key === 'manager' ? 'Manager' : key.replace('store_','')) + ' password saved');
+  persist(); renderStores();
 }
 
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
 function showLogin() {
   document.getElementById('login-screen').classList.add('show');
   document.getElementById('login-pw').value = '';
@@ -895,34 +892,43 @@ function hideLogin() {
 }
 
 function doLogin() {
-  const pw = document.getElementById('login-pw').value;
+  const pw = document.getElementById('login-pw').value.trim();
   const err = document.getElementById('login-err');
+  err.textContent = '';
+
+  // No manager pw set yet — let them in as manager
   const managerPw = localStorage.getItem('pw_manager') || '';
   if (!managerPw) {
+    saveSession('manager', '');
     hideLogin(); setRole('manager');
     showToast('No password set. Please set one in Stores.');
     return;
   }
 
-if (pw === managerPw) {
-  localStorage.setItem('session_role', 'manager');
-  localStorage.setItem('session_store', '');
-  hideLogin(); setRole('manager'); return;
-}
+  // Manager check
+  if (pw === managerPw) {
+    saveSession('manager', '');
+    hideLogin(); setRole('manager');
+    return;
+  }
 
-if (matched) {
-  localStorage.setItem('session_role', 'staff');
-  localStorage.setItem('session_store', matched.id);
-  hideLogin(); setRole('staff');
-  staffState.storeId = matched.id;
-  renderStaff(); return;
-}
+  // Staff check — use state.stores (already loaded from localStorage/Sheets)
+  const matched = state.stores.find(s => {
+    const stored = localStorage.getItem('pw_store_' + s.id) || '';
+    return stored && pw === stored;
+  });
+  if (matched) {
+    saveSession('staff', matched.id);
+    staffState.storeId = matched.id;
+    hideLogin(); setRole('staff');
+    return;
+  }
+
   err.textContent = 'Wrong password.';
 }
 
 function logout() {
-  localStorage.removeItem('session_role');
-  localStorage.removeItem('session_store');
+  clearSession();
   document.getElementById('role-dropdown').classList.remove('open');
   staffState = { storeId:'', productId:'', color:'', sizeQtys:{}, submitted:false };
   showLogin();
@@ -935,6 +941,7 @@ function toggleLock(productId) {
   persist(); renderInventory();
 }
 
+// ─── SHEET SYNC ───────────────────────────────────────────────────────────────
 async function syncFromSheet() {
   try {
     const res = await fetch(SHEET_URL + '?action=load');
@@ -948,7 +955,12 @@ async function syncFromSheet() {
     if (data.passwords) {
       Object.entries(data.passwords).forEach(([k, v]) => { if (v) localStorage.setItem('pw_' + k, v); });
     }
-    persist();
+    // Save to localStorage so next load has fresh data before Sheets responds
+    save('stores', state.stores);
+    save('products', state.products);
+    save('inventory', state.inventory);
+    save('transferLogs', state.transferLogs);
+    save('lockedProducts', state.lockedProducts);
     return true;
   } catch (e) {
     console.warn('syncFromSheet failed:', e);
@@ -960,40 +972,49 @@ async function syncToSheet() {
   try {
     const passwords = { manager: localStorage.getItem('pw_manager') || '' };
     state.stores.forEach(s => { passwords['store_' + s.id] = localStorage.getItem('pw_store_' + s.id) || ''; });
-    const body = JSON.stringify({
-      stores: state.stores,
-      products: state.products,
-      inventory: state.inventory,
-      transferLogs: state.transferLogs,
-      lockedProducts: state.lockedProducts,
-      passwords: passwords,
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        stores: state.stores,
+        products: state.products,
+        inventory: state.inventory,
+        transferLogs: state.transferLogs,
+        lockedProducts: state.lockedProducts,
+        passwords,
+      }),
     });
-    await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
   } catch (e) {
     console.warn('syncToSheet failed:', e);
   }
 }
 
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 if (!localStorage.getItem('pw_manager')) {
   localStorage.setItem('pw_manager', 'admin');
 }
 
-const savedRole = localStorage.getItem('session_role');
-const savedStore = localStorage.getItem('session_store');
+// 1. Try to restore session from localStorage immediately (no network needed)
+const sessionRestored = restoreSession();
 
+// 2. If no session, show login
+if (!sessionRestored) showLogin();
+
+// 3. Sync from Sheets in background — refresh UI after if already logged in
 syncFromSheet().then(ok => {
-  if (ok && ok) showToast('Data synced ✓');
+  if (!ok) return;
+  showToast('Data synced ✓');
+  // Re-render current view with fresh data
+  if (state.role === 'manager') showTab(state.tab);
+  else if (state.role === 'staff' && staffState.storeId) renderStaff();
+  // If session was staff but store no longer exists after sync, force logout
+  else if (localStorage.getItem('session_role') === 'staff') {
+    const storeId = localStorage.getItem('session_store');
+    if (!state.stores.find(s => s.id === storeId)) {
+      clearSession(); showLogin();
+    }
+  }
 });
-
-if (savedRole === 'manager') {
-  setRole('manager');
-} else if (savedRole === 'staff' && savedStore) {
-  setRole('staff');
-  staffState.storeId = savedStore;
-  renderStaff();
-} else {
-  showLogin();
-}
 
 </script>
 </body>
