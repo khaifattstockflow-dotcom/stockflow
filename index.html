@@ -958,6 +958,8 @@ function saveProduct(){
 function deleteProduct(id){
   const p=state.products.find(x=>x.id===id);
   if(!confirm(`Delete product "${p?.sku}"? This will also remove all its inventory.`))return;
+  // Auto-unlock before deleting
+  state.lockedProducts=state.lockedProducts.filter(x=>x!==id);
   if(p?.imageUrl){
     const m=p.imageUrl.match(/[?&]id=([^&]+)/);
     if(m)fetch(SHEET_URL,{method:'POST',body:JSON.stringify({action:'deleteImage',fileId:m[1]})}).catch(()=>{});
@@ -1169,9 +1171,33 @@ function submitRequest(){
     text,done:false,
     createdAt:new Date().toISOString(),
   });
-  persist();
-  showToast('Request sent ✓');
+  // Save locally first — works offline/on any device
+  save('requests', state.requests);
+  showToast('Request saved ✓');
   renderRequests();
+  // Then try to sync in background — don't block UI
+  syncRequestsOnly();
+}
+
+async function syncRequestsOnly(){
+  try{
+    const passwords={manager:localStorage.getItem('pw_manager')||''};
+    state.stores.forEach(s=>{passwords['store_'+s.id]=localStorage.getItem('pw_store_'+s.id)||'';});
+    await fetch(SHEET_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({
+        stores:state.stores,products:state.products,
+        inventory:state.inventory,transferLogs:state.transferLogs,
+        lockedProducts:state.lockedProducts,
+        requests:state.requests,passwords
+      }),
+    });
+  }catch(e){
+    // Silent fail — data already saved locally
+    // Will sync next time any manager opens the app
+    console.warn('Request sync failed, saved locally:',e);
+  }
 }
 
 function doneRequest(id){
@@ -1179,6 +1205,7 @@ function doneRequest(id){
   if(!r)return;
   r.done=true;
   r.doneAt=new Date().toISOString();
+  save('requests',state.requests);
   persist();
   renderRequests();
 }
@@ -1188,6 +1215,7 @@ function undoRequest(id){
   if(!r)return;
   r.done=false;
   delete r.doneAt;
+  save('requests',state.requests);
   persist();
   renderRequests();
 }
