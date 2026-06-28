@@ -270,8 +270,8 @@ input,select{font-family:inherit}
 
 <script>
 const SIZE_PRESETS = {
-  '16-36': Array.from({length:21},(_,i)=>String(16+i)),
-  '27-50': Array.from({length:24},(_,i)=>String(27+i)),
+  '16-37': Array.from({length:22},(_,i)=>String(16+i)),
+  '26-50': Array.from({length:25},(_,i)=>String(26+i)),
   '7C-13': ['7C','8C','9C','10C','11C','12C','13C','1','2','3','4','5','6','7','8','9','10','11','12','13'],
 };
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw8EHmaEpXQQ-N2SkZZuLdiaCkXgZU59zrNkBa4jn7nmUQgDhaeIEgvcs4hrNpdz3qS_g/exec';
@@ -286,11 +286,13 @@ let state={
   inventory:load('inventory',[]),transferLogs:load('transferLogs',[]),
   lockedProducts:load('lockedProducts',[]),
   requests:load('requests',[]),
+  outOfStockFlags:load('outOfStockFlags',[]), // [{storeId,productId,color,at}]
 };
 function persist(){
   save('stores',state.stores);save('products',state.products);
   save('inventory',state.inventory);save('transferLogs',state.transferLogs);
   save('lockedProducts',state.lockedProducts);save('requests',state.requests);
+  save('outOfStockFlags',state.outOfStockFlags);
   syncToSheet();
 }
 
@@ -454,6 +456,13 @@ function staffSetOutOfStock(){
   if(state.lockedProducts.includes(staffState.productId)){showToast('This product is locked');return;}
   const v=prod.variants.find(v=>v.color===staffState.color);if(!v)return;
   v.sizes.forEach(({size})=>{staffState.sizeQtys[size]=0;setCountQty(staffState.storeId,prod.id,staffState.color,size,0);});
+  // Record OOS flag
+  state.outOfStockFlags=state.outOfStockFlags.filter(f=>
+    !(f.storeId===staffState.storeId&&f.productId===prod.id&&f.color===staffState.color));
+  state.outOfStockFlags.push({
+    storeId:staffState.storeId,productId:prod.id,
+    color:staffState.color,at:new Date().toISOString()
+  });
   persist();staffState.submitted=true;showToast('Marked as Out of Stock');renderStaff();
 }
 function staffReset(){staffState={storeId:staffState.storeId,productId:'',color:'',sizeQtys:{},submitted:false};renderStaff();}
@@ -509,8 +518,16 @@ function renderInventory(){
       html+=`</tr></thead><tbody>`;
       state.stores.forEach((store,si)=>{
         const rowId=`row-${store.id}-${prod.id}-${variant.color}`.replace(/[^a-zA-Z0-9-]/g,'_');
-        html+=`<tr id="${rowId}" data-store="${store.id}" data-prod="${prod.id}" data-color="${variant.color}">
-          <td style="${si%2===1?'background:#f0fdf4':''}">${store.id}</td>`;
+        const oosFlag=state.outOfStockFlags.find(f=>f.storeId===store.id&&f.productId===prod.id&&f.color===variant.color);
+        html+=`<tr id="${rowId}" data-store="${store.id}" data-prod="${prod.id}" data-color="${variant.color}"
+          style="${oosFlag?'background:#fff5f5!important':''}">
+          <td style="${si%2===1&&!oosFlag?'background:#f0fdf4':oosFlag?'background:#fff5f5':''}">
+            <div style="display:flex;align-items:center;gap:3px;flex-wrap:nowrap">
+              <span style="font-weight:700;color:${oosFlag?'#ef4444':'#44403c'};white-space:nowrap">${store.id}</span>
+              ${oosFlag?`<button onclick="clearOOS('${store.id}','${prod.id}','${variant.color}')"
+                style="font-size:8px;font-weight:700;color:#ef4444;background:#fef2f2;border:1px solid #fca5a5;border-radius:3px;padding:1px 4px;cursor:pointer;white-space:nowrap;line-height:1.4">OOS ✕</button>`:''}
+            </div>
+          </td>`;
         variant.sizes.forEach(({size})=>{
           const q=getQty(store.id,prod.id,variant.color,size);
           const cls=q===0?'cell-zero':q<=2?'cell-low':q<=5?'cell-mid':'cell-ok';
@@ -1056,6 +1073,12 @@ function toggleLock(productId){
   persist();renderInventory();
 }
 
+function clearOOS(storeId,productId,color){
+  state.outOfStockFlags=state.outOfStockFlags.filter(f=>
+    !(f.storeId===storeId&&f.productId===productId&&f.color===color));
+  persist();renderInventory();
+}
+
 // ── REQUESTS VIEW ────────────────────────────────────────────────────────────
 function renderRequests(){
   const c=document.getElementById('content');
@@ -1244,10 +1267,12 @@ async function syncFromSheet(){
     if(data.transferLogs)state.transferLogs=data.transferLogs;
     if(data.lockedProducts)state.lockedProducts=data.lockedProducts;
     if(Array.isArray(data.requests))state.requests=data.requests;
+    if(Array.isArray(data.outOfStockFlags))state.outOfStockFlags=data.outOfStockFlags;
     if(data.passwords)Object.entries(data.passwords).forEach(([k,v])=>{if(v)localStorage.setItem('pw_'+k,v);});
     save('stores',state.stores);save('products',state.products);
     save('inventory',state.inventory);save('transferLogs',state.transferLogs);
     save('lockedProducts',state.lockedProducts);save('requests',state.requests);
+    save('outOfStockFlags',state.outOfStockFlags);
     return true;
   }catch(e){console.warn('syncFromSheet failed:',e);return false;}
 }
@@ -1258,7 +1283,7 @@ async function syncToSheet(){
     await fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({stores:state.stores,products:state.products,inventory:state.inventory,
         transferLogs:state.transferLogs,lockedProducts:state.lockedProducts,
-        requests:state.requests,passwords})});
+        requests:state.requests,outOfStockFlags:state.outOfStockFlags,passwords})});
   }catch(e){console.warn('syncToSheet failed:',e);}
 }
 
